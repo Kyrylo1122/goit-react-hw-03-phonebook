@@ -9,7 +9,19 @@ class App extends Component {
     contacts: [],
     filter: '',
   };
-
+  componentDidMount() {
+    const items = localStorage.getItem('contacts');
+    const parsedItems = JSON.parse(items);
+    if (parsedItems) {
+      this.setState({ contacts: [...parsedItems] });
+    }
+  }
+  componentDidUpdate(_, prevState) {
+    const newContacts = this.state.contacts;
+    if (newContacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(newContacts));
+    }
+  }
   changeFilter = e => {
     this.setState({ filter: e.currentTarget.value });
   };
@@ -19,10 +31,8 @@ class App extends Component {
       alert('Name already exist');
       return;
     }
-    const newCon = this.state.contacts;
-    newCon.push(data);
-    this.setState({ contacts: newCon });
-    // this.setState(p => p.contacts.push(data));
+
+    this.setState(prevState => ({ contacts: [...prevState.contacts, data] }));
   };
   isExistedName = name => this.state.contacts.map(e => e.name).includes(name);
 
